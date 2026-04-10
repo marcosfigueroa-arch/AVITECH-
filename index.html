@@ -1,0 +1,188 @@
+# ========================================================
+# MANEJO DE CAVALOS + DIETA + GRÁFICOS + CUSTOS + NUTRIÇÃO + MANEJO DE PASTAGENS
+# VERSÃO 6.0 - Super Completa!
+# Para: MARCOS
+# ========================================================
+
+import os
+import matplotlib.pyplot as plt
+from time import sleep
+
+# Cores
+VERDE = "\033[92m"
+AZUL = "\033[94m"
+AMARELO = "\033[93m"
+VERMELHO = "\033[91m"
+ROXO = "\033[95m"
+RESET = "\033[0m"
+NEGRITO = "\033[1m"
+
+# Preços médios 2026
+PRECO_FENO = 2.30
+PRECO_RACAO = 8.50
+PRECO_SUPLEMENTO = 0.80
+
+def limpar_tela():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def criar_graficos(tipo, peso, forragem, concentrado, custo_diario):
+    labels = ['Forragem', 'Concentrado']
+    valores = [forragem, concentrado]
+    cores = ['#4CAF50', '#FF9800']
+    
+    plt.figure(figsize=(14, 6))
+    plt.subplot(1, 2, 1)
+    barras = plt.bar(labels, valores, color=cores)
+    plt.title(f'Divisão da Dieta - {peso} kg')
+    plt.ylabel('kg/dia')
+    plt.grid(axis='y', alpha=0.3)
+    for bar in barras:
+        altura = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2, altura + 0.2, f'{altura} kg', ha='center', fontweight='bold')
+    
+    plt.subplot(1, 2, 2)
+    plt.pie(valores, labels=labels, colors=cores, autopct='%1.1f%%', startangle=90, explode=(0.05, 0.05), shadow=True)
+    plt.title('Porcentagem da Dieta')
+    
+    plt.suptitle(f'Custo Diário: R$ {custo_diario:.2f} | Mensal: R$ {custo_diario*30:.2f}', 
+                 fontsize=16, fontweight='bold', color='darkblue')
+    plt.tight_layout()
+    nome = f'dieta_{tipo}_{peso}kg.png'
+    plt.savefig(nome, dpi=300, bbox_inches='tight')
+    print(f"{VERDE}✅ Gráfico salvo: {nome}{RESET}")
+    plt.show()
+
+def manejo_pastagens(tipo):
+    print(f"\n{ROXO}{NEGRITO}🌿 MANEJO DE PASTAGENS RECOMENDADO{RESET}\n")
+    
+    print("📌 Recomendações Gerais:")
+    print("• Altura ideal de pastejo: 8–15 cm (entrar com 15 cm, sair com 8 cm)")
+    print("• Período de descanso: 21–35 dias (dependendo da estação)")
+    print("• Rotação de piquetes: mínimo 4–6 piquetes")
+    print("• Adubação: 2–3 vezes ao ano (baseado em análise de solo)")
+    print("• Controle de plantas invasoras e formigas")
+    print("• Água e sombra em todos os piquetes\n")
+    
+    if tipo == 1:   # Atleta
+        print(f"{AMARELO}🏆 PARA CAVALO ATLETA:{RESET}")
+        print("• Pastagem de alta qualidade (Tifton, Coastcross ou Capim Aruana)")
+        print("• Suplementação com feno de excelente qualidade nos dias de treino pesado")
+        print("• Evitar pastagens muito úmidas (risco de laminite)")
+        
+    elif tipo == 2: # Normal
+        print(f"{AMARELO}🐴 PARA CAVALO NORMAL:{RESET}")
+        print("• Pode usar pastagens de média qualidade")
+        print("• Sistema de rotação mais simples (3–4 piquetes)")
+        print("• Bom para manutenção de peso")
+        
+    elif tipo == 3: # Cavalgada
+        print(f"{AMARELO}🏇 PARA CAVALGADA / LAZER:{RESET}")
+        print("• Pastagens resistentes ao pisoteio (Tifton 85 ou Quênia)")
+        print("• Acesso diário à pastagem para bem-estar mental")
+        print("• Cuidado com erosão em trilhas próximas")
+        
+    elif tipo == 4: # Três Tambores
+        print(f"{AMARELO}🏁 PARA TRÊS TAMBOR:{RESET}")
+        print("• Pastagem com boa densidade para explosão muscular")
+        print("• Recuperação rápida após treinos intensos")
+        print("• Evitar pastos muito molhados (risco de lesões)")
+        
+    elif tipo == 5: # Potro
+        print(f"{AMARELO}🐴 PARA POTROS:{RESET}")
+        print("• Pastagem de alta qualidade e baixa altura (capim novo)")
+        print("• Piquetes exclusivos para potros (menos parasitas)")
+        print("• Creep feeding próximo à pastagem")
+        print("• Monitorar ingestão de areia (fornecer sal mineralizado)")
+
+def calcular_dieta(tipo, peso):
+    print(f"\n{VERDE}Calculando tudo para {peso} kg...{RESET}\n")
+    sleep(0.8)
+    
+    if tipo == 1:
+        forragem = round(peso * 0.018, 1); concentrado = round(peso * 0.010, 1); titulo = "🏆 CAVALO ATLETA"; proteina_alvo = "12–14%"
+    elif tipo == 2:
+        forragem = round(peso * 0.020, 1); concentrado = round(peso * 0.003, 1); titulo = "🐴 CAVALO NORMAL"; proteina_alvo = "8–10%"
+    elif tipo == 3:
+        forragem = round(peso * 0.022, 1); concentrado = round(peso * 0.005, 1); titulo = "🏇 CAVALO PARA CAVALGADA"; proteina_alvo = "10–12%"
+    elif tipo == 4:
+        forragem = round(peso * 0.016, 1); concentrado = round(peso * 0.009, 1); titulo = "🏁 TRÊS TAMBOR"; proteina_alvo = "12–13%"
+    elif tipo == 5:
+        forragem = round(peso * 0.020, 1); concentrado = round(peso * 0.010, 1); titulo = "🐴 POTRO"; proteina_alvo = "16–18%"
+    
+    # Cálculos de custo e nutrição (mantidos iguais)
+    custo_feno = round(forragem * PRECO_FENO, 2)
+    custo_racao = round(concentrado * PRECO_RACAO, 2)
+    custo_suplemento = PRECO_SUPLEMENTO
+    custo_diario = round(custo_feno + custo_racao + custo_suplemento, 2)
+    custo_mensal = round(custo_diario * 30, 2)
+    
+    de_total = round(forragem * 2.05 + concentrado * 2.95, 1)
+    pb_g = round((forragem * 0.085 * 1000) + (concentrado * 0.14 * 1000), 0)
+    pb_pct = round(pb_g / ((forragem + concentrado)*1000) * 100, 1)
+    ca_g = round(peso * (0.08 if tipo == 5 else 0.04), 1)
+    p_g = round(peso * (0.045 if tipo == 5 else 0.025), 1)
+    
+    print(f"{AMARELO}{titulo}{RESET} - {peso} kg\n")
+    print(f"{VERDE}🥕 DIETA DIÁRIA{RESET}")
+    print(f"   Forragem:      {forragem:6.1f} kg")
+    print(f"   Concentrado:   {concentrado:6.1f} kg")
+    print(f"   Total:         {forragem + concentrado:6.1f} kg\n")
+    
+    print(f"{ROXO}📊 NUTRIÇÃO{RESET}")
+    print(f"   Energia:       {de_total:6.1f} Mcal/dia")
+    print(f"   Proteína:      {pb_g:6.0f} g/dia ({pb_pct}%)")
+    print(f"   Cálcio:        {ca_g:6.1f} g/dia")
+    print(f"   Fósforo:       {p_g:6.1f} g/dia")
+    
+    print(f"\n💰 CUSTO: R$ {custo_diario:.2f}/dia  |  R$ {custo_mensal:.2f}/mês")
+    
+    criar_graficos(tipo, peso, forragem, concentrado, custo_diario)
+    manejo_pastagens(tipo)
+
+def main():
+    while True:
+        limpar_tela()
+        print("="*90)
+        print(f"{ROXO}{NEGRITO}🐎 MANEJO COMPLETO DE CAVALOS 6.0 - COM PASTAGENS 🐎{RESET}")
+        print("="*90)
+        
+        print("1️⃣  Cavalo Atleta")
+        print("2️⃣  Cavalo Normal")
+        print("3️⃣  Cavalo para Cavalgada")
+        print("4️⃣  Cavalo de Três Tambores")
+        print("5️⃣  Potro")
+        print("6️⃣  Sair")
+        
+        try:
+            opcao = int(input(f"\n{NEGRITO}Escolha (1-6): {RESET}"))
+            if opcao == 6:
+                print(f"\n{VERDE}Obrigado! Sucesso na criação! 🐎🌿💰{RESET}")
+                break
+            if opcao not in range(1,6):
+                continue
+                
+            peso = float(input(f"{NEGRITO}Peso do cavalo (kg): {RESET}"))
+            if peso < 30 or peso > 1300:
+                print(f"{VERMELHO}Peso inválido!{RESET}")
+                sleep(1)
+                continue
+                
+            calcular_dieta(opcao, peso)
+            
+            print(f"\n{AZUL}DICAS GERAIS DE MANEJO:{RESET}")
+            print("• Sempre faça análise de solo da pastagem")
+            print("• Monitore o escore corporal mensalmente")
+            print("• Ajuste a lotação: 1–2 cavalos por hectare (depende da qualidade)")
+            
+            input(f"\n{VERDE}Pressione ENTER para continuar...{RESET}")
+            
+        except ValueError:
+            print(f"{VERMELHO}Digite apenas números!{RESET}")
+            sleep(1)
+
+if __name__ == "__main__":
+    try:
+        import matplotlib
+    except ImportError:
+        os.system("pip install matplotlib")
+    main()
